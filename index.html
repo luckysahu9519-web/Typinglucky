@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Typing Master | ₹25 Premium Pass</title>
+    <style>
+        :root { --blue: #004a99; --gold: #FFD700; --green: #25D366; --red: #d32f2f; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        
+        /* News Ticker */
+        .ticker { background: var(--red); color: white; padding: 10px; overflow: hidden; white-space: nowrap; font-weight: bold; border-bottom: 3px solid var(--gold); }
+        .ticker-text { display: inline-block; animation: scroll 25s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Login System */
+        #loginOverlay { position: fixed; inset: 0; background: var(--blue); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn-pay { background: var(--green); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Main App Interface */
+        .container { max-width: 900px; margin: 20px auto; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); padding-bottom: 20px; }
+        .header { background: var(--blue); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { display: flex; gap: 10px; }
+        .exam-badge { width: 45px; height: 45px; background: white; border-radius: 50%; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; color: var(--blue); font-size: 10px; font-weight: bold; text-align: center; line-height: 1; }
+        
+        /* Controls */
+        .controls { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .lang-switch { display: flex; gap: 10px; }
+        .lang-btn { flex: 1; padding: 12px; border: 2px solid var(--blue); border-radius: 8px; cursor: pointer; font-weight: bold; background: white; }
+        .lang-btn.active { background: var(--blue); color: white; }
+        
+        /* Progress Grid */
+        .progress-section { padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
+        .box { height: 30px; background: #eee; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #777; }
+        .box.done { background: var(--green); color: white; }
+
+        /* Typing Area */
+        .display-text { background: #f9f9f9; border: 2px solid #ddd; padding: 20px; font-size: 22px; line-height: 1.6; min-height: 120px; margin: 20px; border-radius: 10px; user-select: none; }
+        .input-area { width: calc(100% - 40px); margin: 0 20px; height: 150px; padding: 15px; border: 2px solid var(--blue); border-radius: 10px; font-size: 18px; box-sizing: border-box; }
+        
+        #keyboardMap { display: none; text-align: center; padding: 20px; }
+        .footer-info { text-align: center; font-size: 12px; color: #666; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="ticker">
+    <div class="ticker-text">🚀 NEW: Railway NTPC & DSSSB English/Hindi Sets Added! | 🏆 Get 1-Year Premium Pass for just ₹25 | 📞 Contact Admin: 9519777988</div>
+</div>
+
+<div id="loginOverlay">
+    <div class="login-card">
+        <h2 style="color:var(--blue); margin-top:0;">Premium Login</h2>
+        <input type="text" id="phone" placeholder="Enter Mobile Number">
+        <input type="password" id="pin" placeholder="Enter PIN (Default: 2026)">
+        <button class="btn-pay" onclick="checkLogin()">LOGIN TO PRACTICE</button>
+        <p style="font-size:12px; color:#666; margin-top:15px;">New User? Pay ₹25 to <b>9519777988@mbk</b> and send screenshot on WhatsApp.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div class="logo-box">
+            <div class="exam-badge">SSC</div>
+            <div class="exam-badge">RLY</div>
+            <div class="exam-badge">DSSSB</div>
+            <div class="exam-badge">⚖️</div>
+        </div>
+        <div style="text-align:right">
+            <div id="timer" style="font-size:32px; font-weight:bold; color:var(--gold);">10:00</div>
+            <div style="font-size:10px; letter-spacing:1px;">EXAM TIME</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="lang-switch">
+            <button id="enBtn" class="lang-btn active" onclick="setLang('en')">English Mode</button>
+            <button id="hiBtn" class="lang-btn" onclick="setLang('hi')">हिंदी (Remington Gail)</button>
+        </div>
+        
+        <select id="examSelect" onchange="resetProgressGrid()" style="padding:12px; border-radius:8px; border:2px solid var(--blue); font-weight:bold;">
+            <option value="ssc">🦁 SSC CGL / CHSL</option>
+            <option value="railway">🚂 Railway NTPC / Group D</option>
+            <option value="dsssb">🏛️ DSSSB Delhi Govt</option>
+            <option value="court">⚖️ High Court Legal</option>
+        </select>
+    </div>
+
+    <div class="progress-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b>📊 DAILY PROGRESS TRACKER</b>
+            <span id="setCount" style="background:var(--blue); color:white; padding:2px 10px; border-radius:20px; font-size:12px;">0/20 Done</span>
+        </div>
+        <div class="grid" id="progressGrid"></div>
+    </div>
+
+    <div class="display-text" id="displayText">Select your language and press START...</div>
+    
+    <textarea id="typingArea" class="input-area" placeholder="Start typing here..." disabled onpaste="return false;"></textarea>
+    
+    <div style="padding:20px; display:flex; gap:10px;">
+        <button onclick="startTest()" style="flex:2; padding:15px; background:var(--blue); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">START TEST</button>
+        <button onclick="toggleKeyboard()" style="flex:1; padding:15px; background:#666; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">⌨️ LAYOUT</button>
+    </div>
+
+    <div id="keyboardMap">
+        <p style="font-weight:bold;">Hindi Remington Gail (Mangal) Layout</p>
+        <img src="https://i.imgur.com/your-keyboard-image.png" alt="Keyboard Map" style="max-width:100%; border:1px solid #ccc; border-radius:10px;">
+    </div>
+
+    <div class="footer-info">
+        Validity: <span id="valDate">365</span> Days Left | User: <span id="userPh">Guest</span><br>
+        <button onclick="logout()" style="margin-top:10px; color:red; background:none; border:none; text-decoration:underline; cursor:pointer;">Logout</button>
+    </div>
+</div>
+
+<script>
+    let currentLang = 'en';
+    const masterPin = "2026";
+    const passages = {
+        en: { ssc: "The Digital India programme is a flagship programme of the Government of India with a vision to transform India into a digitally empowered society and knowledge economy. The focus is on being transformative that is to realize IT plus IT is equal to India Tomorrow.", railway: "Indian Railways is the backbone of the country's transport system. It is one of the largest networks in the world, connecting every corner of India and carrying millions of passengers daily.", dsssb: "The Delhi Subordinate Services Selection Board is committed to recruiting highly skilled and competent individuals for various departments under the Government of NCT of Delhi.", court: "In the High Court of Judicature, the petition was filed under Article 226 of the Constitution of India seeking a writ of mandamus to direct the respondents to release the pending payments." },
+        hi: { ssc: "डिजिटल इंडिया कार्यक्रम भारत सरकार का एक प्रमुख कार्यक्रम है जिसका विज़न भारत को डिजिटल रूप से सशक्त समाज और ज्ञान अर्थव्यवस्था में बदलना है। इसका मुख्य उद्देश्य सूचना प्रौद्योगिकी को भविष्य के भारत से जोड़ना है।", railway: "भारतीय रेलवे देश की परिवहन व्यवस्था की जीवन रेखा है। यह दुनिया के सबसे बड़े नेटवर्कों में से एक है, जो भारत के हर कोने को जोड़ता है और प्रतिदिन लाखों यात्रियों को अपनी मंजिल तक पहुँचाता है।", dsssb: "दिल्ली अधीनस्थ सेवा चयन बोर्ड दिल्ली सरकार के विभिन्न विभागों के लिए अत्यंत कुशल और सक्षम व्यक्तियों की भर्ती करने के लिए प्रतिबद्ध है।", court: "उच्च न्यायालय के समक्ष भारत के संविधान के अनुच्छेद 226 के तहत एक रिट याचिका दायर की गई थी, जिसमें उत्तरदाताओं को लंबित भुगतान जारी करने का निर्देश देने की मांग की गई थी।" }
+    };
+
+    function checkLogin() {
+        const ph = document.getElementById('phone').value;
+        const pin = document.getElementById('pin').value;
+        if(ph.length >= 10 && pin === masterPin) {
+            localStorage.setItem("logged_ph", ph);
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('userPh').innerText = ph;
+            resetProgressGrid();
+        } else { alert("Wrong PIN! Contact 9519777988 to get your access."); }
+    }
+
+    function setLang(l) {
+        currentLang = l;
+        document.getElementById('enBtn').classList.toggle('active', l === 'en');
+        document.getElementById('hiBtn').classList.toggle('active', l === 'hi');
+        document.getElementById('typingArea').style.fontFamily = (l === 'hi') ? "'Mangal', 'Arial Unicode MS', sans-serif" : "inherit";
+        resetProgressGrid();
+    }
+
+    function resetProgressGrid() {
+        const grid = document.getElementById('progressGrid');
+        const mode = document.getElementById('examSelect').value;
+        grid.innerHTML = '';
+        let doneCount = 0;
+        for(let i=1; i<=20; i++) {
+            const box = document.createElement('div');
+            box.className = 'box';
+            if(localStorage.getItem(`set_${currentLang}_${mode}_${i}`)) {
+                box.className = 'box done'; box.innerText = '✓'; doneCount++;
+            } else { box.innerText = i; }
+            grid.appendChild(box);
+        }
+        document.getElementById('setCount').innerText = `${doneCount}/20 Done`;
+    }
+
+    function toggleKeyboard() {
+        const kb = document.getElementById('keyboardMap');
+        kb.style.display = (kb.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function startTest() {
+        const mode = document.getElementById('examSelect').value;
+        document.getElementById('displayText').innerText = passages[currentLang][mode];
+        document.getElementById('typingArea').disabled = false;
+        document.getElementById('typingArea').value = '';
+        document.getElementById('typingArea').focus();
+    }
+
+    function logout() { localStorage.clear(); location.reload(); }
+
+    window.onload = () => {
+        if(localStorage.getItem("logged_ph")) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('userPh').innerText = localStorage.getItem("logged_ph");
+            resetProgressGrid();
+        }
+    };
+</script>
+
+</body>
+</html>
